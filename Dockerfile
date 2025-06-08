@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir \
 
 COPY . .
 
-CMD ["python", "server.py"]
+CMD ["python", "server2.py"]
