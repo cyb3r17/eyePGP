@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>anarchy auth</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #000;
+            color: #00ff00;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 40px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ff0000;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #00ff00;
+            text-decoration: none;
+            border: 1px solid #333;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .nav-links a:hover {
+            border-color: #00ff00;
+        }
+
+        /* Main content */
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .description {
+            margin-bottom: 40px;
+            color: #ccc;
+            line-height: 1.8;
+        }
+
+        /* Upload section */
+        .upload-box {
+            border: 2px dashed #333;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 40px 0;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .upload-box:hover {
+            border-color: #00ff00;
+        }
+
+        .upload-box.processing {
+            border-color: #ffff00;
+            pointer-events: none;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Terminal output */
+        .terminal {
+            background: #111;
+            border: 1px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 12px;
+            display: none;
+        }
+
+        .terminal-line {
+            margin: 5px 0;
+        }
+
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffff00; }
+
+        /* Visualization section */
+        .visualization-section {
+            display: none;
+            margin: 30px 0;
+            border: 1px solid #333;
+            background: #111;
+        }
+
+        .visualization-header {
+            background: #222;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            color: #00ff00;
+            font-size: 14px;
+        }
+
+        .visualization-content {
+            padding: 20px;
+        }
+
+        .visualization-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .visualization-item {
+            border: 1px solid #333;
+            background: #000;
+        }
+
+        .visualization-title {
+            background: #222;
+            padding: 10px;
+            color: #00ff00;
+            font-size: 12px;
+            border-bottom: 1px solid #333;
+        }
+
+        .visualization-image {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .visualization-image img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #333;
+        }
+
+        .pipeline-info {
+            background: #111;
+            border: 1px solid #333;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 10px;
+            color: #888;
+            overflow-x: auto;
+        }
+
+        .pipeline-info-title {
+            color: #00ff00;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        /* Key display */
+        .key-section {
+            display: none;
+            margin: 30px 0;
+        }
+
+        .key-label {
+            color: #00ff00;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .key-value {
+            background: #111;
+            border: 1px solid #333;
+            padding: 15px;
+            font-size: 10px;
+            word-break: break-all;
+            margin-bottom: 20px;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .key-value:hover {
+            border-color: #00ff00;
+        }
+
+        /* Features */
+        .features {
+            margin: 60px 0;
+        }
+
+        .feature {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #222;
+        }
+
+        .feature:last-child {
+            border-bottom: none;
+        }
+
+        .feature-title {
+            color: #00ff00;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            color: #888;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* Buttons */
+        .btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: #00ff00;
+            padding: 10px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+        }
+
+        .btn:hover {
+            border-color: #00ff00;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            color: #ff0000;
+        }
+
+        .btn-danger:hover {
+            border-color: #ff0000;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid #222;
+            padding: 30px 0;
+            margin-top: 60px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer-links {
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: #888;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        .footer-links a:hover {
+            color: #00ff00;
+        }
+
+        /* Hidden input */
+        .file-input {
+            display: none;
+        }
+
+        /* Info box */
+        .info-box {
+            background: #111;
+            border: 1px solid #333;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+
+            .visualization-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <nav class="nav">
+                <div class="logo">anarchy auth</div>
+                <div class="nav-links">
+                    <a href="#features">features</a>
+                    <a href="#docs">docs</a>
+                    <a href="#source">source</a>
+                    <a href="#donate">donate</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <h1>biometric cryptography</h1>
+            <div class="subtitle">your eye is your key</div>
+            
+            <div class="description">
+                generate ed25519 cryptographic keys from iris patterns. no passwords, no recovery phrases, 
+                no central authority. your unique biometric signature becomes your private key.
+                <br><br>
+                upload your iris image and our server will process it to extract biometric features
+                and generate cryptographic keys. compatible with standard pgp workflows.
+            </div>
+
+            <div class="upload-box" id="uploadBox" onclick="document.getElementById('irisFile').click()">
+                <div class="upload-text">upload iris image</div>
+                <div class="upload-subtext">png, jpg, bmp • max 10mb • processed on server</div>
+            </div>
+            
+            <input type="file" id="irisFile" class="file-input" accept="image/*" onchange="processImage(this)">
+
+            <div class="terminal" id="terminal">
+                <div class="terminal-line">uploading iris image...</div>
+                <div class="terminal-line">extracting biometric features...</div>
+                <div class="terminal-line">generating entropy from iris codes...</div>
+                <div class="terminal-line" id="terminalResult"></div>
+            </div>
+
+            <div class="visualization-section" id="visualizationSection">
+                <div class="visualization-header">
+                    iris processing visualization
+                </div>
+                <div class="visualization-content">
+                    <div class="visualization-grid" id="visualizationGrid">
+                        <!-- Visualization images will be inserted here -->
+                    </div>
+                    <div class="pipeline-info" id="pipelineInfo" style="display: none;">
+                        <div class="pipeline-info-title">pipeline parameters:</div>
+                        <pre id="pipelineInfoContent"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-section" id="keySection">
+                <div class="info-box" id="infoBox"></div>
+                
+                <div class="key-label">public key (ed25519):</div>
+                <div class="key-value" id="publicKey" onclick="copyToClipboard(this)" title="Click to copy">[generated key will appear here]</div>
+                
+                <div class="key-label">private key (ed25519):</div>
+                <div class="key-value" id="privateKey" onclick="copyToClipboard(this)" title="Click to copy">[generated key will appear here]</div>
+                
+                <div style="color: #ff0000; font-size: 12px; margin-bottom: 20px;">
+                    ⚠ warning: store your private key securely. it cannot be recovered.
+                </div>
+                
+                <button class="btn" onclick="downloadKeys()">download keys</button>
+                <button class="btn btn-danger" onclick="clearMemory()">clear memory</button>
+            </div>
+
+            <section class="features" id="features">
+                <div class="feature">
+                    <div class="feature-title">real biometric processing</div>
+                    <div class="feature-desc">
+                        uses iris recognition algorithms to extract unique patterns from eye images.
+                        view real-time visualization of feature extraction and segmentation.
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-title">cryptographic security</div>
+                    <div class="feature-desc">
+                        ed25519 elliptic curve cryptography with entropy derived from unique iris patterns.
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-title">no central authority</div>
+                    <div class="feature-desc">
+                        keys are generated from your biometric data, not stored on any server.
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-title">pgp compatible</div>
+                    <div class="feature-desc">
+                        standard ed25519 keys work with existing pgp workflows for signing and encryption.
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-title">open source</div>
+                    <div class="feature-desc">
+                        fully auditable code. no black boxes, no proprietary algorithms.
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-title">document signing</div>
+                    <div class="feature-desc">
+                        use generated keys for cryptographic signing of documents and messages.
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="#">github</a>
+                <a href="#">docs</a>
+                <a href="#">security</a>
+                <a href="#">privacy</a>
+            </div>
+            <div>built for privacy. built for freedom.</div>
+        </footer>
+    </div>
+
+    <script>
+        let currentKeys = null;
+
+        function displayVisualizations(visualizations) {
+            const visualizationSection = document.getElementById('visualizationSection');
+            const visualizationGrid = document.getElementById('visualizationGrid');
+            const pipelineInfo = document.getElementById('pipelineInfo');
+            const pipelineInfoContent = document.getElementById('pipelineInfoContent');
+            
+            // Clear previous visualizations
+            visualizationGrid.innerHTML = '';
+            
+            const visualizationTitles = {
+                'original_image': 'Original IR Image',
+                'iris_template': 'Iris Template',
+                'segmentation_map': 'Segmentation Map'
+            };
+            
+            let hasVisualizations = false;
+            
+            // Add visualization images
+            Object.keys(visualizationTitles).forEach(key => {
+                if (visualizations[key]) {
+                    hasVisualizations = true;
+                    const item = document.createElement('div');
+                    item.className = 'visualization-item';
+                    item.innerHTML = `
+                        <div class="visualization-title">${visualizationTitles[key]}</div>
+                        <div class="visualization-image">
+                            <img src="data:image/png;base64,${visualizations[key]}" alt="${visualizationTitles[key]}">
+                        </div>
+                    `;
+                    visualizationGrid.appendChild(item);
+                }
+            });
+            
+            // Show pipeline info if available
+            if (visualizations.pipeline_info) {
+                pipelineInfoContent.textContent = visualizations.pipeline_info;
+                pipelineInfo.style.display = 'block';
+                hasVisualizations = true;
+            } else {
+                pipelineInfo.style.display = 'none';
+            }
+            
+            // Show visualization section if we have any visualizations
+            if (hasVisualizations) {
+                visualizationSection.style.display = 'block';
+            } else {
+                visualizationSection.style.display = 'none';
+            }
+        }
+
+        function processImage(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const uploadBox = document.getElementById('uploadBox');
+                const terminal = document.getElementById('terminal');
+                const keySection = document.getElementById('keySection');
+                const visualizationSection = document.getElementById('visualizationSection');
+                
+                // Reset UI
+                uploadBox.classList.add('processing');
+                terminal.style.display = 'block';
+                keySection.style.display = 'none';
+                visualizationSection.style.display = 'none';
+                document.getElementById('terminalResult').textContent = '';
+                document.getElementById('terminalResult').className = 'terminal-line';
+                
+                // Create FormData for file upload
+                const formData = new FormData();
+                formData.append('iris_image', file);
+                
+                // Upload and process
+                fetch('/process_iris', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    uploadBox.classList.remove('processing');
+                    
+                    if (data.error) {
+                        document.getElementById('terminalResult').textContent = `error: ${data.error}`;
+                        document.getElementById('terminalResult').className = 'terminal-line error';
+                        setTimeout(() => {
+                            terminal.style.display = 'none';
+                        }, 3000);
+                    } else {
+                        document.getElementById('terminalResult').textContent = 'ed25519 keypair generated successfully';
+                        document.getElementById('terminalResult').className = 'terminal-line success';
+                        
+                        // Display keys
+                        document.getElementById('publicKey').textContent = data.public_key;
+                        document.getElementById('privateKey').textContent = data.private_key;
+                        
+                        // Store keys for download
+                        currentKeys = {
+                            public: data.public_key,
+                            private: data.private_key,
+                            method: data.method || 'unknown'
+                        };
+                        
+                        // Show visualizations if available
+                        if (data.visualizations && Object.keys(data.visualizations).length > 0) {
+                            displayVisualizations(data.visualizations);
+                        }
+                        
+                        // Show info about processing method
+                        const infoBox = document.getElementById('infoBox');
+                        if (data.warning) {
+                            infoBox.innerHTML = `<span class="warning">⚠ ${data.warning}</span>`;
+                            infoBox.style.display = 'block';
+                        } else if (data.iris_codes_count) {
+                            infoBox.innerHTML = `<span class="success">✓ Generated ${data.iris_codes_count} iris codes using biometric analysis</span>`;
+                            infoBox.style.display = 'block';
+                        } else {
+                            infoBox.style.display = 'none';
+                        }
+                        
+                        setTimeout(() => {
+                            terminal.style.display = 'none';
+                            keySection.style.display = 'block';
+                        }, 1500);
+                    }
+                })
+                .catch(error => {
+                    uploadBox.classList.remove('processing');
+                    document.getElementById('terminalResult').textContent = `network error: ${error.message}`;
+                    document.getElementById('terminalResult').className = 'terminal-line error';
+                    setTimeout(() => {
+                        terminal.style.display = 'none';
+                    }, 3000);
+                });
+            }
+        }
+
+        function copyToClipboard(element) {
+            const text = element.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalColor = element.style.borderColor;
+                element.style.borderColor = '#00ff00';
+                setTimeout(() => {
+                    element.style.borderColor = originalColor;
+                }, 1000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        function downloadKeys() {
+            if (!currentKeys) return;
+            
+            const content = `ANARCHY AUTH - BIOMETRIC CRYPTOGRAPHIC KEYS
+Generated: ${new Date().toISOString()}
+Method: ${currentKeys.method}
+
+PUBLIC KEY (Ed25519):
+${currentKeys.public}
+
+PRIVATE KEY (Ed25519):
+${currentKeys.private}
+
+WARNING: Store your private key securely. It cannot be recovered.
+`;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `iris-keys-${Date.now()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function clearMemory() {
+            if (confirm('Are you sure you want to clear all keys from memory? This action cannot be undone.')) {
+                currentKeys = null;
+                document.getElementById('publicKey').textContent = '[cleared]';
+                document.getElementById('privateKey').textContent = '[cleared]';
+                document.getElementById('keySection').style.display = 'none';
+                document.getElementById('visualizationSection').style.display = 'none';
+                document.getElementById('irisFile').value = '';
+            }
+        }
+
+        // Drag and drop functionality
+        const uploadBox = document.querySelector('.upload-box');
+        
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!uploadBox.classList.contains('processing')) {
+                uploadBox.style.borderColor = '#00ff00';
+            }
+        });
+        
+        uploadBox.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#333';
+        });
+        
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#333';
+            
+            if (!uploadBox.classList.contains('processing')) {
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('irisFile').files = files;
+                    processImage(document.getElementById('irisFile'));
+                }
+            }
+        });
+    </script>
+</body>
+</html>
