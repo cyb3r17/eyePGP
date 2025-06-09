@@ -264,7 +264,7 @@ isort app.py
 
 ## License
 
-eyePGP is released under the MIT License. See [LICENSE](LICENSE) for details.
+eyePGP is released under the GNU General Public License version 3 License. See [LICENSE](LICENSE) for details.
 
 ---
 
